@@ -1,0 +1,13 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+
+[phases.setup]
+cmds = ["npm run install-all"]
+
+[phases.build]
+cmds = ["npm run build"]

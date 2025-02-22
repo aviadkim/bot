@@ -3,29 +3,42 @@ import React, { useState } from 'react';
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const sendMessage = async () => {
     if (input.trim() === '') return;
+    
     const userMessage = { role: 'user', content: input };
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setIsLoading(true);
+    setError(null);
 
     try {
-      const response = await fetch('/chat', {
+      const response = await fetch('http://localhost:5000/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input }),
       });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
       const data = await response.json();
       const botMessage = { role: 'bot', content: data.message };
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Error:', error);
+      setError('שגיאה בשליחת ההודעה. אנא נסה שוב.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div>
+    <div className="chat-container">
       <div className="messages-container">
         {messages.map((msg, index) => (
           <div
@@ -35,15 +48,31 @@ function Chat() {
             <strong>{msg.role === 'user' ? 'אתה' : 'נציג שירות'}:</strong> {msg.content}
           </div>
         ))}
+        {isLoading && (
+          <div className="message bot-message">
+            <div className="loading-indicator">נציג השירות מקליד...</div>
+          </div>
+        )}
+        {error && (
+          <div className="error-message">{error}</div>
+        )}
       </div>
       <div className="input-container">
-        <button onClick={sendMessage}>שלח</button>
+        <button 
+          onClick={sendMessage} 
+          disabled={isLoading || !input.trim()}
+          className="send-button"
+        >
+          שלח
+        </button>
         <input
           type="text"
           value={input}
+          className="message-input"
           placeholder="הקלד את הודעתך כאן..."
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          onKeyPress={(e) => e.key === 'Enter' && !isLoading && input.trim() && sendMessage()}
+          disabled={isLoading}
         />
       </div>
     </div>

@@ -1,18 +1,15 @@
 {
   "name": "customer-service-chatbot",
   "version": "1.0.0",
-  "description": "Full-stack customer service chatbot application",
+  "description": "Customer service chatbot with React frontend and Express backend",
   "scripts": {
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
-    "build": "npm install && cd frontend && npm install && npm run build && cd .. && rimraf backend/public && mkdir -p backend/public && cp -r frontend/build/* backend/public/",
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install && rimraf public && mkdir public && xcopy ..\\frontend\\build\\* public\\ /E /I /Y",
     "start": "cd backend && npm start",
     "dev": "concurrently \"cd frontend && npm start\" \"cd backend && npm run dev\""
   },
   "dependencies": {
-    "rimraf": "^5.0.1",
-    "concurrently": "^8.2.0"
-  },
-  "engines": {
-    "node": ">=14.0.0"
+    "concurrently": "^8.0.1",
+    "rimraf": "^5.0.0"
   }
 }

@@ -6,14 +6,16 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies with cache mount
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
 # Copy source files
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application with cache mount
+RUN --mount=type=cache,target=/root/.npm \
+    npm run build
 
 # Install serve to run the application
 RUN npm install -g serve

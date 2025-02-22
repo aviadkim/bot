@@ -4,7 +4,7 @@
   "description": "Customer service chatbot with React frontend and Express backend",
   "scripts": {
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install && rimraf public && mkdir public && xcopy ..\\frontend\\build\\* public\\ /E /I /Y",
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install && rimraf public && mkdir public && cp -r ../frontend/build/* public/",
     "start": "cd backend && npm start",
     "dev": "concurrently \"cd frontend && npm start\" \"cd backend && npm run dev\""
   },

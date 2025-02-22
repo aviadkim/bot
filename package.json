@@ -4,7 +4,7 @@
   "description": "Full-stack customer service chatbot application",
   "scripts": {
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
-    "build": "npm install && cd frontend && npm install && npm run build && cd .. && rimraf backend/public && mkdir backend/public && xcopy /E /I frontend\build backend\public",
+    "build": "npm install && cd frontend && npm install && npm run build && cd .. && rimraf backend/public && mkdir -p backend/public && cp -r frontend/build/* backend/public/",
     "start": "cd backend && npm start",
     "dev": "concurrently \"cd frontend && npm start\" \"cd backend && npm run dev\""
   },

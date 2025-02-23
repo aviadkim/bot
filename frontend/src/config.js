@@ -1,5 +1,7 @@
 const config = {
-  apiUrl: process.env.REACT_APP_API_URL || 'https://customer-service-chatbot-production.up.railway.app',
+  apiUrl: process.env.NODE_ENV === 'production' 
+    ? 'https://generous-curiosity-production.up.railway.app'
+    : 'http://localhost:8080',
   environment: process.env.NODE_ENV || 'development'
 };
 

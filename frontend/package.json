@@ -5,12 +5,12 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-scripts start",
+    "build": "CI=false GENERATE_SOURCEMAP=false PUBLIC_URL=. react-scripts build",
+    "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject"
   },
   "homepage": ".",

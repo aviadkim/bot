@@ -1,9 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "NODE_ENV=production npm install --omit=dev && npm run build"
+buildCommand = "npm install --omit=dev && npm run build"
 
 [deploy]
-startCommand = "NODE_ENV=production npm start"
+startCommand = "npm start"
 restartPolicyType = "ON_FAILURE"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
@@ -11,6 +11,10 @@ healthcheckTimeout = 300
 [variables]
 PORT = "8080"
 NODE_ENV = "production"
+NPM_CONFIG_PRODUCTION = "true"
+
+[build.env]
+NODE_VERSION = "18.x"
 
 [[services]]
 internal_port = 8080

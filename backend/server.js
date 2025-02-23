@@ -113,34 +113,18 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Serve static files - update the order and configuration
-app.use('/static', express.static(path.join(__dirname, 'public/static')));
+// Remove all existing static file handling
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Remove the content-type middleware for static files
+// Simple catchall route that serves index.html
 app.get('*', (req, res) => {
-  if (req.url.startsWith('/static/')) {
-    res.sendFile(path.join(__dirname, 'public', req.url));
-  } else {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'), {
-      headers: {
-        'Content-Type': 'text/html; charset=UTF-8'
-      }
-    });
-  }
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Update server startup
+// Simplified server startup
 const PORT = process.env.PORT || 8080;
-const server = app.listen(PORT, () => {
-  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-  console.log('Available routes:');
-  console.log('- /health');
-  console.log('- /chat');
-  console.log('- /* (static files)');
-}).on('error', (err) => {
-  console.error('Server failed to start:', err);
-  process.exit(1);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
 // Move graceful shutdown here

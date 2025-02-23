@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "Customer service chatbot with React frontend and Express backend",
   "scripts": {
-    "install": "NODE_ENV=production cd backend && npm install --omit=dev",
-    "prebuild": "rm -rf backend/public || true",
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install --omit=dev && mkdir -p public && rm -rf public/* && cp -r ../frontend/build/* public/",
-    "start": "cd backend && NODE_ENV=production node server.js",
-    "clean": "rm -rf backend/public frontend/build node_modules */node_modules"
+    "clean": "rm -rf */node_modules node_modules backend/public frontend/build",
+    "setup": "npm run clean && npm install",
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install && mkdir -p public && cp -r ../frontend/build/* public/",
+    "start": "cd backend && node server.js"
   },
   "dependencies": {
     "concurrently": "^8.0.1",

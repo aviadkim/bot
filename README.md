@@ -1,5 +1,8 @@
 # Customer Service Chatbot
 
+## Preview
+[![Preview](https://img.shields.io/badge/Preview-View%20Site-blue)](https://generous-curiosity-production.up.railway.app)
+
 ## Environment Setup
 
 ### Development
@@ -14,23 +17,17 @@ OPENAI_API_KEY=your-api-key-here
 
 ## Running the Application
 
-### Development
-1. Install dependencies:
+### Local Development
 ```bash
-npm run install-all
-```
-
-2. Start the development servers:
-```bash
-# Start backend (from backend directory)
+npm install
 npm run dev
-
-# Start frontend (from frontend directory)
-npm start
 ```
 
 ### Production
 The application is configured to deploy automatically on Railway using the settings in `railway.toml`.
+
+## Production URL
+https://generous-curiosity-production.up.railway.app
 
 ## Features
 - Real-time chat interface

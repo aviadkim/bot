@@ -113,23 +113,21 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Remove previous static middleware
-// Move static file serving to the end, just before the catchall route
+// Serve static files - update the order and configuration
+app.use('/static', express.static(path.join(__dirname, 'public/static')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Remove content-type middleware for static files
-app.get(['/*.js', '/*.css'], (req, res, next) => {
-  res.set('Content-Type', 'text/plain');
-  next();
-});
-
-// Update catchall handler
+// Remove the content-type middleware for static files
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'), {
-    headers: {
-      'Content-Type': 'text/html; charset=UTF-8'
-    }
-  });
+  if (req.url.startsWith('/static/')) {
+    res.sendFile(path.join(__dirname, 'public', req.url));
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'), {
+      headers: {
+        'Content-Type': 'text/html; charset=UTF-8'
+      }
+    });
+  }
 });
 
 // Update server startup

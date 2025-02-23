@@ -9,9 +9,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false GENERATE_SOURCEMAP=false PUBLIC_URL=. react-scripts build"
+    "build": "CI=false GENERATE_SOURCEMAP=false PUBLIC_URL=/ react-scripts build"
   },
-  "homepage": ".",
+  "homepage": "/",
   "eslintConfig": {
     "extends": ["react-app"]
   },

@@ -117,29 +117,7 @@ function Chat() {
           </div>
         )}
       </div>
-      <div className="input-container">
-        <button 
-          onClick={runDebugCheck}
-          disabled={isDebugging}
-          className="debug-button"
-          style={{
-            marginRight: '10px',
-            backgroundColor: '#f0f0f0',
-            border: '1px solid #ccc',
-            padding: '8px 15px',
-            borderRadius: '4px',
-            cursor: isDebugging ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {isDebugging ? 'בודק...' : 'בדיקת מערכת'}
-        </button>
-        <button 
-          onClick={sendMessage} 
-          disabled={isLoading || !input.trim()}
-          className="send-button"
-        >
-          שלח
-        </button>
+      <div className="input-container" style={{ display: 'flex', flexDirection: 'row-reverse', alignItems: 'center', gap: '10px' }}>
         <input
           type="text"
           value={input}
@@ -148,7 +126,37 @@ function Chat() {
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && !isLoading && input.trim() && sendMessage()}
           disabled={isLoading}
+          style={{ flex: 1 }}
         />
+        <button 
+          onClick={sendMessage} 
+          disabled={isLoading || !input.trim()}
+          className="send-button"
+          style={{
+            padding: '8px 15px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: isLoading || !input.trim() ? 'not-allowed' : 'pointer'
+          }}
+        >
+          שלח
+        </button>
+        <button 
+          onClick={runDebugCheck}
+          disabled={isDebugging}
+          className="debug-button"
+          style={{
+            padding: '8px 15px',
+            backgroundColor: '#f0f0f0',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            cursor: isDebugging ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {isDebugging ? 'בודק...' : 'בדיקת מערכת'}
+        </button>
       </div>
     </div>
   );

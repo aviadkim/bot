@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import config from '../config';
 
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -16,7 +17,7 @@ function Chat() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5000/chat', {
+      const response = await fetch(`${config.apiUrl}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input }),

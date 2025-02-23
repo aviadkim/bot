@@ -10,9 +10,10 @@ const app = express();
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? 'https://customer-service-chatbot-production.up.railway.app'
-    : 'http://localhost:3000',
-  methods: ['GET', 'POST'],
-  credentials: true
+    : ['http://localhost:3000'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type']
 }));
 app.use(express.json());
 
@@ -42,7 +43,7 @@ app.post('/chat', async (req, res) => {
       messages: [
         { 
           role: 'system', 
-          content: 'You are a helpful customer service representative for Muvne Global. Respond in Hebrew and be polite and professional.'
+          content: 'You are a helpful customer service representative for Muvne Global. Be polite and professional. Always respond in the same language as the user\'s message.'
         },
         { role: 'user', content: userMessage }
       ],
@@ -64,7 +65,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000; // Ensure we use port 5000 for local development
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

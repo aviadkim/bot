@@ -17,36 +17,61 @@ function Chat() {
 
     try {
       // Check backend connectivity
-      debugResults.push('בודק חיבור לשרת...');
-      const serverCheck = await fetch(`${config.apiUrl}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'test' }),
-      });
+      debugResults.push('🔍 בודק חיבור לשרת...');
+      let serverCheck;
+      try {
+        serverCheck = await fetch(`${config.apiUrl}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'test' }),
+        });
 
-      if (!serverCheck.ok) {
-        throw new Error(`Server connection failed: ${serverCheck.status}`);
+        if (!serverCheck.ok) {
+          throw new Error(`Server responded with status: ${serverCheck.status}`);
+        }
+        debugResults.push('✅ חיבור לשרת תקין');
+      } catch (serverError) {
+        if (serverError.message.includes('Failed to fetch')) {
+          debugResults.push('❌ לא ניתן להתחבר לשרת');
+          debugResults.push('סיבות אפשריות:');
+          debugResults.push(`1. השרת אינו פעיל (${config.apiUrl})`);
+          debugResults.push('2. בעיית חיבור לאינטרנט');
+          debugResults.push('3. חסימת CORS');
+          throw serverError;
+        }
+        throw serverError;
       }
-      debugResults.push('✅ חיבור לשרת תקין');
 
       // Test OpenAI API
-      const apiResponse = await serverCheck.json();
-      if (apiResponse.message) {
-        debugResults.push('✅ OpenAI API מחובר ופועל');
-      } else {
-        debugResults.push('❌ בעיה בתגובת OpenAI API');
+      try {
+        const apiResponse = await serverCheck.json();
+        if (apiResponse.message) {
+          debugResults.push('✅ OpenAI API מחובר ופועל');
+        } else if (apiResponse.error) {
+          debugResults.push('❌ שגיאה בתגובת OpenAI API');
+          debugResults.push(`פירוט: ${apiResponse.error}`);
+        }
+      } catch (apiError) {
+        debugResults.push('❌ שגיאה בתקשורת עם OpenAI API');
+        debugResults.push('נא לוודא שמפתח ה-API תקין ומוגדר כראוי');
       }
 
-      // Check environment variables
-      debugResults.push(`🔍 כתובת שרת: ${config.apiUrl}`);
+      // Environment info
+      debugResults.push('\nמידע סביבה:');
+      debugResults.push(`🌐 כתובת שרת: ${config.apiUrl}`);
+      debugResults.push(`🔧 מצב: ${process.env.NODE_ENV || 'development'}`);
       
     } catch (error) {
       console.error('Debug Error:', error);
-      debugResults.push(`❌ שגיאה: ${error.message}`);
-      debugResults.push('הצעות לפתרון:');
-      debugResults.push('1. ודא שמפתח ה-API של OpenAI מוגדר ב-Railway');
-      debugResults.push('2. ודא שהשרת פועל ומקבל בקשות');
-      debugResults.push('3. בדוק את הגדרות ה-CORS בשרת');
+      if (!debugResults.some(result => result.includes('❌'))) {
+        debugResults.push(`❌ שגיאה: ${error.message}`);
+      }
+      
+      debugResults.push('\nצעדים מומלצים לפתרון:');
+      debugResults.push('1. ודא שהשרת פועל על פורט 5001');
+      debugResults.push('2. בדוק את קובץ .env עבור OPENAI_API_KEY');
+      debugResults.push('3. נסה לרענן את הדף');
+      debugResults.push('4. בדוק את ה-console של הדפדפן לשגיאות נוספות');
     } finally {
       setDebugInfo(debugResults.join('\n'));
       setIsDebugging(false);

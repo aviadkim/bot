@@ -47,10 +47,6 @@ console.log('OpenAI API key loaded successfully');
 
 const openai = new OpenAIApi(configuration);
 
-// Move static file serving before the API routes
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Chat endpoint
 app.post('/chat', async (req, res) => {
   try {
@@ -117,11 +113,23 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// The "catchall" handler for any request that doesn't match the ones above
+// Remove previous static middleware
+// Move static file serving to the end, just before the catchall route
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Remove content-type middleware for static files
+app.get(['/*.js', '/*.css'], (req, res, next) => {
+  res.set('Content-Type', 'text/plain');
+  next();
+});
+
+// Update catchall handler
 app.get('*', (req, res) => {
-  // Set correct content type for HTML
-  res.set('Content-Type', 'text/html');
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'), {
+    headers: {
+      'Content-Type': 'text/html; charset=UTF-8'
+    }
+  });
 });
 
 // Update server startup

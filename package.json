@@ -5,9 +5,9 @@
   "scripts": {
     "install": "cd backend && npm install --production",
     "prebuild": "rm -rf backend/public || true",
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install --production && mkdir -p public && cp -r ../frontend/build/* public/",
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install --production && mkdir -p public && rm -rf public/* && cp -r ../frontend/build/* public/",
     "start": "cd backend && node server.js",
-    "clean": "rm -rf backend/public || true"
+    "clean": "rm -rf backend/public frontend/build node_modules */node_modules"
   },
   "dependencies": {
     "concurrently": "^8.0.1",

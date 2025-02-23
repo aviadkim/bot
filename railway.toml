@@ -4,12 +4,8 @@ buildCommand = "npm install && npm run build"
 
 [deploy]
 startCommand = "npm start"
-healthcheckPath = "/health"
-healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
 
-[phases.setup]
-cmds = ["npm run install-all"]
-
-[phases.build]
-cmds = ["npm run build"]
+[variables]
+PORT = "8080"
+NODE_ENV = "production"

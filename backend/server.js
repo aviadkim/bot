@@ -105,43 +105,24 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Serve static files from the React app
+// Serve static files from the React app - update the path
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public', 'static')));
+
+// Add favicon handling
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'favicon.ico'));
+});
 
 // The "catchall" handler for any request that doesn't match the ones above
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Try different ports if default is in use
-const tryPort = (port) => {
-  return new Promise((resolve, reject) => {
-    const server = app.listen(port)
-      .on('listening', () => {
-        console.log(`Server started successfully on port ${port}`);
-        resolve(server);
-      })
-      .on('error', (err) => {
-        if (err.code === 'EADDRINUSE') {
-          console.log(`Port ${port} is busy, trying ${port + 1}`);
-          server.close();
-          resolve(tryPort(port + 1));
-        } else {
-          reject(err);
-        }
-      });
-  });
-};
-
-// Start server with port fallback
-const PORT = process.env.PORT || 5001;
-let server = null;
-
-tryPort(PORT).then(serverInstance => {
-  server = serverInstance;
-}).catch(err => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
+// Simplified port handling
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 // Graceful shutdown

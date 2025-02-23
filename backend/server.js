@@ -6,7 +6,7 @@ const path = require('path');
 
 const app = express();
 
-// Enhanced logging middleware - update to log more details
+// Enhanced logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   console.log('Environment:', {
@@ -17,57 +17,98 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
-}));
+// Enhanced CORS configuration
+const corsOptions = {
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://localhost:5000',
+      'http://127.0.0.1:5000',
+      'https://customer-service-chatbot-production.up.railway.app',
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true);
+    }
 
-app.use(express.json({ extended: true }));
+    // Allow any localhost or 127.0.0.1 origin regardless of port
+    if (origin.match(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`Origin ${origin} not allowed by CORS`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
 
-// Add content type middleware
-app.use((req, res, next) => {
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.setHeader('Accept-Charset', 'utf-8');
-  next();
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '1mb' }));
+
+// Health check endpoint for Railway
+app.get('/health', (req, res) => {
+  const healthData = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    apiKeyConfigured: !!process.env.OPENAI_API_KEY
+  };
+  res.status(200).json(healthData);
 });
 
-// OpenAI Configuration with validation
+// OpenAI Configuration
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 if (!process.env.OPENAI_API_KEY) {
-  console.error('OpenAI API key is missing. Environment variables available:', Object.keys(process.env));
+  console.error('OpenAI API key is missing');
   process.exit(1);
 }
 
-// Log successful API key loading
-console.log('OpenAI API key loaded successfully');
-
 const openai = new OpenAIApi(configuration);
 
-// Chat endpoint
+// Enhanced error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(err.status || 500).json({
+    error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
+  });
+});
+
+// Chat endpoint with improved error handling
 app.post('/chat', async (req, res) => {
   try {
-    console.log('Request body:', req.body);
-    
     const userMessage = req.body.message;
     if (!userMessage) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    console.log('Making OpenAI API call...');
     const completion = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       messages: [
         { 
           role: 'system', 
-          content: `אתה נציג שירות לקוחות מקצועי בחברת טכנולוגיה ישראלית. 
+          content: `אתה נציג שירות לקוחות מקצועי במובנה גלובל, חברה המתמחה בפתרונות טכנולוגיים ושירותי מוקד תמיכה מתקדמים. 
           פרטי התקשורת הם:
-          - אימייל: support@companynamesupport.com
-          - טלפון: 02-1234567
-          - שעות פעילות: ימים א'-ה' 9:00-17:00
+          - אימייל: support@movneglobal.com
+          - טלפון: 03-9999999
+          - שעות פעילות: ימים א'-ה' 8:00-18:00
+          
+          מובנה גלובל מספקת שירותי:
+          - פתרונות תוכנה מתקדמים
+          - שירותי מוקד תמיכה 24/7
+          - פתרונות אבטחת מידע
+          - ייעוץ טכנולוגי
           
           אנא ספק מענה מדויק, מקצועי ומכוון מטרה. השתדל לתת תשובות מלאות אך תמציתיות בעברית תקנית.`
         },
@@ -77,69 +118,38 @@ app.post('/chat', async (req, res) => {
       temperature: 0.7,
     });
 
-    console.log('OpenAI response received');
     const botMessage = completion.data.choices[0].message.content;
-    console.log('Bot response:', botMessage);
-    
-    const response = {
+    res.status(200).json({
       message: botMessage,
       timestamp: new Date().toISOString()
-    };
-
-    // Ensure proper JSON encoding
-    return res.status(200)
-      .send(JSON.stringify(response, null, 2));
-
-  } catch (error) {
-    console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data
     });
 
+  } catch (error) {
+    console.error('Chat Error:', error);
     if (error.response?.status === 401) {
       return res.status(401).json({ error: 'Invalid API key' });
     }
-
-    return res.status(500).json({
-      error: error.message || 'An error occurred while processing your request'
+    res.status(500).json({
+      error: 'An error occurred while processing your request',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
 
-// Add health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'public')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  });
+}
+
+const port = process.env.PORT || 5000;
+const server = app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${port}`);
 });
 
-// Remove previous static file handling
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Add specific handlers for js and css files
-app.get('*.js', (req, res) => {
-  res.set('Content-Type', 'application/javascript');
-  res.sendFile(path.join(__dirname, 'public', req.url));
-});
-
-app.get('*.css', (req, res) => {
-  res.set('Content-Type', 'text/css');
-  res.sendFile(path.join(__dirname, 'public', req.url));
-});
-
-// Serve index.html for all other routes
-app.get('*', (req, res) => {
-  res.set('Content-Type', 'text/html');
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Simplified server startup
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-// Move graceful shutdown here
+// Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received. Shutting down gracefully...');
   server.close(() => {

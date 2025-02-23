@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import config from '../config';
+import './Chat.css';
 
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -117,7 +118,7 @@ function Chat() {
           </div>
         )}
       </div>
-      <div className="input-container" style={{ display: 'flex', flexDirection: 'row-reverse', alignItems: 'center', gap: '10px' }}>
+      <div className="input-container">
         <input
           type="text"
           value={input}
@@ -126,20 +127,11 @@ function Chat() {
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && !isLoading && input.trim() && sendMessage()}
           disabled={isLoading}
-          style={{ flex: 1 }}
         />
         <button 
           onClick={sendMessage} 
           disabled={isLoading || !input.trim()}
           className="send-button"
-          style={{
-            padding: '8px 15px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: isLoading || !input.trim() ? 'not-allowed' : 'pointer'
-          }}
         >
           שלח
         </button>
@@ -147,13 +139,6 @@ function Chat() {
           onClick={runDebugCheck}
           disabled={isDebugging}
           className="debug-button"
-          style={{
-            padding: '8px 15px',
-            backgroundColor: '#f0f0f0',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            cursor: isDebugging ? 'not-allowed' : 'pointer'
-          }}
         >
           {isDebugging ? 'בודק...' : 'בדיקת מערכת'}
         </button>

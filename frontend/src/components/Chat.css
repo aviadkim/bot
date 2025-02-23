@@ -45,6 +45,8 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .message-input {
@@ -53,6 +55,7 @@
   border: 1px solid #ced4da;
   border-radius: 4px;
   font-size: 16px;
+  direction: rtl;
 }
 
 .send-button {
@@ -63,6 +66,12 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  min-width: 80px;
+  transition: background-color 0.3s ease;
+}
+
+.send-button:hover {
+  background-color: #0056b3;
 }
 
 .send-button:disabled {
@@ -78,7 +87,13 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  min-width: 120px;
+  transition: all 0.3s ease;
   margin-left: 10px;
+}
+
+.debug-button:hover {
+  background-color: #e0e0e0;
 }
 
 .debug-button:disabled {

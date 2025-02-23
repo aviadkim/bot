@@ -4,9 +4,10 @@
   "description": "Customer service chatbot with React frontend and Express backend",
   "scripts": {
     "install": "cd backend && npm install --production",
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install --production && mkdir -p public && rm -rf public/* && cp -r ../frontend/build/* public/",
+    "prebuild": "rm -rf backend/public || true",
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install --production && mkdir -p public && cp -r ../frontend/build/* public/",
     "start": "cd backend && node server.js",
-    "clean": "rm -rf frontend/build backend/public node_modules frontend/node_modules backend/node_modules"
+    "clean": "rm -rf backend/public || true"
   },
   "dependencies": {
     "concurrently": "^8.0.1",

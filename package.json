@@ -1,12 +1,11 @@
 {
   "name": "customer-service-chatbot",
   "version": "1.0.0",
-  "description": "Customer service chatbot with React frontend and Express backend",
   "scripts": {
-    "clean": "rm -rf */node_modules node_modules */build backend/public",
-    "prebuild": "npm run clean",
-    "build": "node scripts/build.js",
-    "start": "cd backend && node server.js"
+    "install": "npm install --omit=dev",
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install --omit=dev && mkdir -p public && cp -r ../frontend/build/* public/",
+    "start": "cd backend && node server.js",
+    "clean": "rm -rf */node_modules node_modules */build backend/public"
   },
   "dependencies": {
     "concurrently": "^8.0.1",
@@ -15,6 +14,6 @@
     "fs-extra": "^11.1.1"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": "16.x"
   }
 }

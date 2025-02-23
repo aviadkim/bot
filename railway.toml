@@ -1,9 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm install && npm run build"
+buildCommand = "NODE_ENV=production npm install --omit=dev && npm run build"
 
 [deploy]
-startCommand = "npm start"
+startCommand = "NODE_ENV=production npm start"
 restartPolicyType = "ON_FAILURE"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
@@ -19,5 +19,5 @@ protocol = "http"
 [deploy.envs]
 OPENAI_API_KEY = "${OPENAI_API_KEY}"
 PORT = "${PORT}"
-NODE_ENV = "${NODE_ENV}"
+NODE_ENV = "production"
 FRONTEND_URL = "${FRONTEND_URL}"

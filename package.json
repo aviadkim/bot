@@ -2,7 +2,7 @@
   "name": "customer-service-chatbot",
   "version": "1.0.0",
   "scripts": {
-    "install": "npm install --omit=dev",
+    "postinstall": "cd frontend && npm install && cd ../backend && npm install --omit=dev",
     "build": "cd frontend && npm install && npm run build && cd ../backend && npm install --omit=dev && mkdir -p public && cp -r ../frontend/build/* public/",
     "start": "cd backend && node server.js",
     "clean": "rm -rf */node_modules node_modules */build backend/public"

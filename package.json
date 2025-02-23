@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "description": "Customer service chatbot with React frontend and Express backend",
   "scripts": {
-    "clean": "rm -rf */node_modules node_modules backend/public frontend/build",
-    "setup": "npm run clean && npm install",
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install && mkdir -p public && cp -r ../frontend/build/* public/",
+    "clean": "rm -rf */node_modules node_modules */build backend/public",
+    "prebuild": "npm run clean",
+    "build": "node scripts/build.js",
     "start": "cd backend && node server.js"
   },
   "dependencies": {
     "concurrently": "^8.0.1",
     "node-fetch": "^3.3.2",
-    "rimraf": "^5.0.0"
+    "rimraf": "^5.0.0",
+    "fs-extra": "^11.1.1"
   },
   "engines": {
     "node": ">=16.0.0"

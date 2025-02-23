@@ -113,18 +113,21 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Update static file handling
-app.use(express.static(path.join(__dirname, 'public'), {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    } else if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-    }
-  }
-}));
+// Remove previous static file handling
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Move this after static file handling
+// Add specific handlers for js and css files
+app.get('*.js', (req, res) => {
+  res.set('Content-Type', 'application/javascript');
+  res.sendFile(path.join(__dirname, 'public', req.url));
+});
+
+app.get('*.css', (req, res) => {
+  res.set('Content-Type', 'text/css');
+  res.sendFile(path.join(__dirname, 'public', req.url));
+});
+
+// Serve index.html for all other routes
 app.get('*', (req, res) => {
   res.set('Content-Type', 'text/html');
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

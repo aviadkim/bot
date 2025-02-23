@@ -9,7 +9,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? 'https://customer-service-chatbot-production.up.railway.app'
+    ? ['https://customer-service-chatbot-production.up.railway.app', 'http://localhost:3000']
     : ['http://localhost:3000'],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
@@ -65,7 +65,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 5000; // Ensure we use port 5000 for local development
+const PORT = process.env.PORT || 8080; // Update default port to 8080 for Railway
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

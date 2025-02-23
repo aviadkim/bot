@@ -1,19 +1,15 @@
 {
   "name": "customer-service-chatbot-backend",
   "version": "1.0.0",
-  "description": "Backend server for customer service chatbot",
   "main": "server.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "openai": "^3.3.0"
+  },
   "scripts": {
     "start": "node server.js",
-    "dev": "PORT=5000 nodemon server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "openai": "^3.2.1",
-    "dotenv": "^16.0.3"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.22"
+    "dev": "nodemon server.js"
   }
 }

@@ -5,7 +5,19 @@ buildCommand = "npm install && npm run build"
 [deploy]
 startCommand = "npm start"
 restartPolicyType = "ON_FAILURE"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
 
 [variables]
 PORT = "8080"
 NODE_ENV = "production"
+
+[[services]]
+internal_port = 8080
+protocol = "http"
+
+[deploy.envs]
+OPENAI_API_KEY = "${OPENAI_API_KEY}"
+PORT = "${PORT}"
+NODE_ENV = "${NODE_ENV}"
+FRONTEND_URL = "${FRONTEND_URL}"

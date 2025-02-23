@@ -6,9 +6,14 @@ const path = require('path');
 
 const app = express();
 
-// Enhanced logging middleware
+// Enhanced logging middleware - update to log more details
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} ${req.method} ${req.url}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log('Environment:', {
+    NODE_ENV: process.env.NODE_ENV,
+    PORT: process.env.PORT,
+    FRONTEND_URL: process.env.FRONTEND_URL
+  });
   next();
 });
 
@@ -33,9 +38,12 @@ const configuration = new Configuration({
 });
 
 if (!process.env.OPENAI_API_KEY) {
-  console.error('OpenAI API key is missing. Please set OPENAI_API_KEY in .env file');
+  console.error('OpenAI API key is missing. Environment variables available:', Object.keys(process.env));
   process.exit(1);
 }
+
+// Log successful API key loading
+console.log('OpenAI API key loaded successfully');
 
 const openai = new OpenAIApi(configuration);
 
@@ -119,15 +127,24 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Simplified port handling
+// Update server startup
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log('Available routes:');
+  console.log('- /health');
+  console.log('- /chat');
+  console.log('- /* (static files)');
+}).on('error', (err) => {
+  console.error('Server failed to start:', err);
+  process.exit(1);
 });
 
-// Graceful shutdown
+// Move graceful shutdown here
 process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully...');
   server.close(() => {
-    console.log('Server shutting down');
+    console.log('Server closed');
+    process.exit(0);
   });
 });
